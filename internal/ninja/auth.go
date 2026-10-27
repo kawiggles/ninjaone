@@ -1,4 +1,4 @@
-package main
+package ninja
 
 import (
 	"encoding/json"

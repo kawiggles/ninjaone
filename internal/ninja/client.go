@@ -1,4 +1,4 @@
-package main
+package ninja
 
 import (
 	"os"
@@ -11,10 +11,10 @@ type Client struct {
 	token	string
 	baseURL	string
 }
-func NewClient() Client {
+func NewClient() *Client {
 	client := &http.Client{}
 
-	return Client{
+	return &Client{
 		client: client,
 		token: GetCred(client), 
 		baseURL: os.Getenv("NINJAONE_URL"),
