@@ -29,10 +29,9 @@ type Device struct {
 	SystemName       string      `json:"systemName"`
 	DNSName          string      `json:"dnsName"`
 	NetbiosName      string      `json:"netbiosName"`
-	Created          int64       `json:"created"`
-	LastContact      int64       `json:"lastContact"`
-	LastUpdate       int64       `json:"lastUpdate"`
-	UserData         UserData    `json:"userData"`
+	Created          float64       `json:"created"`
+	LastContact      float64       `json:"lastContact"`
+	LastUpdate       float64       `json:"lastUpdate"`
 	Tags             []string    `json:"tags"`
 	Maintenance      Maintenance `json:"maintenance"`
 	References       References  `json:"references"`
@@ -40,8 +39,8 @@ type Device struct {
 
 type Maintenance struct {
 	Status        string `json:"status"`
-	Start         int64  `json:"start"`
-	End           int64  `json:"end"`
+	Start         float64  `json:"start"`
+	End           float64  `json:"end"`
 	ReasonMessage string `json:"reasonMessage"`
 }
 
@@ -54,7 +53,6 @@ type References struct {
 	BackupUsage             map[string]int64        `json:"backupUsage"`
 	Warranty                Warranty                `json:"warranty"`
 	AssignedOwner           AssignedOwner           `json:"assignedOwner"`
-	BackupBandwidthThrottle BackupBandwidthThrottle `json:"backupBandwidthThrottle"`
 }
 
 type AssignedOwner struct {
@@ -78,37 +76,12 @@ type AssignedOwner struct {
 	Roles             []string `json:"roles"`
 }
 
-type BackupBandwidthThrottle struct {
-	Enabled              bool         `json:"enabled"`
-	WorkHoursKbps        int64        `json:"workHoursKbps"`
-	NonWorkHoursKbps     int64        `json:"nonWorkHoursKbps"`
-	WorkHoursUserUnit    string       `json:"workHoursUserUnit"`
-	NonWorkHoursUserUnit string       `json:"nonWorkHoursUserUnit"`
-	WorkSchedule         WorkSchedule `json:"workSchedule"`
-}
-
-type WorkSchedule struct {
-	EndHour     int64    `json:"endHour"`
-	EndMinute   int64    `json:"endMinute"`
-	StartHour   int64    `json:"startHour"`
-	StartMinute int64    `json:"startMinute"`
-	WeekDays    []string `json:"weekDays"`
-}
-
 type Ation struct {
 	Name             string   `json:"name"`
 	Address          *string  `json:"address,omitempty"`
 	Description      string   `json:"description"`
-	UserData         UserData `json:"userData"`
 	ID               int64    `json:"id"`
 	NodeApprovalMode *string  `json:"nodeApprovalMode,omitempty"`
-}
-
-type UserData struct {
-	AdditionalProp1 AdditionalProp1 `json:"additionalProp1"`
-}
-
-type AdditionalProp1 struct {
 }
 
 type Policy struct {
@@ -134,13 +107,19 @@ type Role struct {
 }
 
 type Warranty struct {
-	StartDate                   int64 `json:"startDate"`
-	EndDate                     int64 `json:"endDate"`
-	ManufacturerFulfillmentDate int64 `json:"manufacturerFulfillmentDate"`
+	StartDate                   float64 `json:"startDate"`
+	EndDate                     float64 `json:"endDate"`
+	ManufacturerFulfillmentDate float64 `json:"manufacturerFulfillmentDate"`
 }
 
 func (c *Client) GetDevices() ([]Device, error) {
-	resp, err := http.Get(c.baseURL+"/v2/devices")
+	req, err := http.NewRequest(http.MethodGet, c.baseURL+"/v2/devices", nil)
+	if err != nil {
+		return nil, err
+	}
+	c.SetHeader(req)
+
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
