@@ -6,16 +6,10 @@ import (
 	"net/http"
 )
 
-type Devices []Device
-
-func UnmarshalDevices(data []byte) (Devices, error) {
-	var r Devices
+func UnmarshalDevices(data []byte) ([]Device, error) {
+	var r []Device
 	err := json.Unmarshal(data, &r)
 	return r, err
-}
-
-func (r *Devices) Marshal() ([]byte, error) {
-	return json.Marshal(r)
 }
 
 type Device struct {
